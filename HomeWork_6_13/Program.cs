@@ -111,6 +111,7 @@ namespace HomeWork_6_13
         public void Start()
         {
             bool isOpen = true;
+
             while (isOpen)
             {
                 Console.Clear();
