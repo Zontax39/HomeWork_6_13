@@ -14,24 +14,15 @@ namespace HomeWork_6_13
 
     internal static class UserUtils
     {
-        public static int GetNumber()
+        public static int GetNumber(string text)
         {
-            bool isWork = true;
-
-            while (isWork)
+            if (int.TryParse(text, out int number))
             {
-                string userInput = Console.ReadLine();
-
-                if (int.TryParse(userInput, out int number))
-                {
-                    isWork = false;
-                    return number;
-                }
-                else
-                {
-                    Console.WriteLine("Попробуйте ещё раз!");
-                    isWork = true;
-                }
+                return number;
+            }
+            else
+            {
+                Console.WriteLine("Попробуйте ещё раз!");
             }
             return 0;
         }
@@ -55,6 +46,7 @@ namespace HomeWork_6_13
     {
         public Breakage Breakage { get; private set; }
         public int Money { get; private set; }
+
         public Client()
         {
             Money = 20000;
@@ -95,6 +87,7 @@ namespace HomeWork_6_13
             Price = price;
         }
     }
+
     internal class ServiceStation
     {
         private int _money;
@@ -130,7 +123,7 @@ namespace HomeWork_6_13
                         break;
 
                     default:
-                        TryRepair(client.Breakage, int.Parse(userInput) - 1);
+                        TryRepair(client.Breakage, UserUtils.GetNumber(userInput) - 1);
                         break;
                 }
             }
@@ -165,10 +158,15 @@ namespace HomeWork_6_13
         {
             Detail detail = _storage.GetDetail(index);
 
-            if (breakage.RepairDetail == detail.Name)
+            if (detail == null)
+            {
+                Console.WriteLine("Нет такой детали !");
+            }
+            else if (breakage.RepairDetail == detail.Name)
             {
                 Console.WriteLine($"Ремонт прошёл успешно вы заработали {CalculateRepairPrice(breakage)} ");
                 _money += CalculateRepairPrice(breakage);
+                _storage.RemoveDetail(detail);
             }
             else
             {
@@ -178,6 +176,7 @@ namespace HomeWork_6_13
             Console.ReadKey();
         }
     }
+
     internal class Storage
     {
         private List<Detail> _details;
@@ -202,8 +201,21 @@ namespace HomeWork_6_13
 
         public Detail GetDetail(int index)
         {
-            Detail detail = _details[index];
-            return detail;
+            if (index < _details.Count && index > 0)
+            {
+                Detail detail = _details[index];
+
+                return detail;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public void RemoveDetail(Detail detail)
+        {
+            _details.Remove(detail);
         }
 
         public void ShowAllDetails()
