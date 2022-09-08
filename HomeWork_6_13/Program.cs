@@ -55,24 +55,8 @@ namespace HomeWork_6_13
 
         private Breakage FillBreakages()
         {
-            Random random = new Random();
-            int countBreakages = 11;
-            int randomBreakage = random.Next(1, countBreakages); ;
-
-            switch (randomBreakage)
-            {
-                case 1: return (new Breakage("Замена тормозного диска", "Тормозной диск", 1000));
-                case 2: return (new Breakage("Протекший радиатор", "Радиатор", 5000));
-                case 3: return (new Breakage("Лопнул масленный фильтр", "Масленный фильтр", 500));
-                case 4: return (new Breakage("Замена масла в двигателе", "Масло 4л.", 800));
-                case 5: return (new Breakage("Разбита фара", "Фара", 2000));
-                case 6: return (new Breakage("Поцарапан бампер", "Бампер", 3000));
-                case 7: return (new Breakage("Свистит ремень ГРМ", "Ремень ГРМ", 4000));
-                case 8: return (new Breakage("Не крутится стартер", "Стартер", 6000));
-                case 9: return (new Breakage("Не заряжаеться аккамулятор", "Генератор", 7000));
-                case 10: return (new Breakage("Потек антифриз", "Помпа", 8000));
-                default: return null;
-            }
+            DB_Breakages dbBreakages = new DB_Breakages();
+            return dbBreakages.GetRandomBreakage();
         }
     }
 
@@ -231,6 +215,7 @@ namespace HomeWork_6_13
 
         private void Fill()
         {
+            DB_Details dB_Details = new DB_Details();
             int minRangeRandom = 1;
             int maxRangeRandom = 16;
             Random random = new Random();
@@ -238,53 +223,64 @@ namespace HomeWork_6_13
 
             for (int i = 0; i <= countrandom; i++)
             {
-                minRangeRandom = 1;
-                maxRangeRandom = 11;
-                int randomDetail = random.Next(minRangeRandom, maxRangeRandom);
-
-                switch (randomDetail)
-                {
-                    case 1:
-                        _details.Add(new Detail("Тормозной диск", 2500));
-                        break;
-
-                    case 2:
-                        _details.Add(new Detail("Радиатор", 5000));
-                        break;
-
-                    case 3:
-                        _details.Add(new Detail("Масленный фильтр", 800));
-                        break;
-
-                    case 4:
-                        _details.Add(new Detail("Масло 4л.", 6000));
-                        break;
-
-                    case 5:
-                        _details.Add(new Detail("Фара", 2000));
-                        break;
-
-                    case 6:
-                        _details.Add(new Detail("Бампер", 10000));
-                        break;
-
-                    case 7:
-                        _details.Add(new Detail("Ремень ГРМ", 1500));
-                        break;
-
-                    case 8:
-                        _details.Add(new Detail("Стартер", 8000));
-                        break;
-
-                    case 9:
-                        _details.Add(new Detail("Генератор", 7000));
-                        break;
-
-                    case 10:
-                        _details.Add(new Detail("Помпа", 8000));
-                        break;
-                }
+                _details.Add(dB_Details.GetRandomDetail());
             }
+        }
+    }
+
+    class DB_Details
+    {
+
+        private Random _random = new Random();
+        private List<Detail> _details;
+
+        public DB_Details()
+        {
+            _details = new List<Detail>();
+            _details.Add(new Detail("Тормозной диск", 2500));
+            _details.Add(new Detail("Радиатор", 5000));
+            _details.Add(new Detail("Масленный фильтр", 800));
+            _details.Add(new Detail("Масло 4л.", 6000));
+            _details.Add(new Detail("Фара", 2000));
+            _details.Add(new Detail("Бампер", 10000));
+            _details.Add(new Detail("Ремень ГРМ", 1500));
+            _details.Add(new Detail("Стартер", 8000));
+            _details.Add(new Detail("Генератор", 7000));
+            _details.Add(new Detail("Помпа", 8000));
+        }
+
+        public Detail GetRandomDetail()
+        {
+            
+            int index = _random.Next(0, _details.Count);
+            return _details[index];
+        }
+    }
+
+    class DB_Breakages
+    {
+        private List<Breakage> _breakages;
+        
+        public DB_Breakages()
+        {
+            _breakages= new List<Breakage>();
+            _breakages.Add(new Breakage("Замена тормозного диска", "Тормозной диск", 1000));
+            _breakages.Add(new Breakage("Протекший радиатор", "Радиатор", 5000));
+            _breakages.Add(new Breakage("Лопнул масленный фильтр", "Масленный фильтр", 500));
+            _breakages.Add(new Breakage("Замена масла в двигателе", "Масло 4л.", 800));
+            _breakages.Add(new Breakage("Разбита фара", "Фара", 2000));
+            _breakages.Add(new Breakage("Поцарапан бампер", "Бампер", 3000));
+            _breakages.Add(new Breakage("Свистит ремень ГРМ", "Ремень ГРМ", 4000));
+            _breakages.Add(new Breakage("Не крутится стартер", "Стартер", 6000));
+            _breakages.Add(new Breakage("Не заряжаеться аккамулятор", "Генератор", 7000));
+            _breakages.Add(new Breakage("Потек антифриз", "Помпа", 8000));
+        }
+
+        public Breakage GetRandomBreakage()
+        {
+            Random random = new Random();
+            int index = random.Next(0, _breakages.Count);
+            return _breakages[index];
         }
     }
 }
