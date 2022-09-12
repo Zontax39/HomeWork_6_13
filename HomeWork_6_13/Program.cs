@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 
 namespace HomeWork_6_13
 {
@@ -32,13 +33,13 @@ namespace HomeWork_6_13
     {
         public string Name { get; private set; }
         public int PriceRepair { get; private set; }
-        public string RepairDetail { get; private set; }
+        public string SparePartForRepair { get; private set; }
 
         public Breakage(string name, string detail, int price)
         {
             Name = name;
             PriceRepair = price;
-            RepairDetail = detail;
+            SparePartForRepair = detail;
         }
     }
 
@@ -50,12 +51,12 @@ namespace HomeWork_6_13
         public Client()
         {
             Money = 20000;
-            Breakage = FillBreakages();
+            Breakage = GetBreakage();
         }
 
-        private Breakage FillBreakages()
+        private Breakage GetBreakage()
         {
-            DB_Breakages dbBreakages = new DB_Breakages();
+            DataBaseBreakages dbBreakages = new DataBaseBreakages();
             return dbBreakages.GetRandomBreakage();
         }
     }
@@ -87,6 +88,7 @@ namespace HomeWork_6_13
 
         public void Start()
         {
+            const string CommandExit = "esc";
             bool isOpen = true;
 
             while (isOpen)
@@ -99,15 +101,14 @@ namespace HomeWork_6_13
                 Console.WriteLine("Выбирите деталь для установки или введите \"esc\" для отказа");
                 _storage.ShowAllDetails();
                 string userInput = Console.ReadLine();
-
                 switch (userInput)
                 {
-                    case "esc":
-                        Rejection();
+                    case CommandExit:
+                        Refuse();
                         break;
 
                     default:
-                        TryRepair(client.Breakage, UserUtils.GetNumber(userInput) - 1);
+                        Repair(client.Breakage, UserUtils.GetNumber(userInput) - 1);
                         break;
                 }
             }
@@ -116,7 +117,7 @@ namespace HomeWork_6_13
         private int CalculateRepairPrice(Breakage breakage)
         {
             int totalPrice;
-            Detail currentDetail = _storage.GetDetail(breakage.RepairDetail);
+            Detail currentDetail = _storage.GetDetail(breakage.SparePartForRepair);
 
             if (currentDetail != null)
             {
@@ -131,14 +132,14 @@ namespace HomeWork_6_13
             }
         }
 
-        private void Rejection()
+        private void Refuse()
         {
             Console.WriteLine($"Вы заплатили шраф: {_penalty}.");
             _money -= _penalty;
             Console.ReadKey();
         }
 
-        private void TryRepair(Breakage breakage, int index)
+        private void Repair(Breakage breakage, int index)
         {
             Detail detail = _storage.GetDetail(index);
 
@@ -146,7 +147,7 @@ namespace HomeWork_6_13
             {
                 Console.WriteLine("Нет такой детали !");
             }
-            else if (breakage.RepairDetail == detail.Name)
+            else if (breakage.SparePartForRepair == detail.Name)
             {
                 Console.WriteLine($"Ремонт прошёл успешно вы заработали {CalculateRepairPrice(breakage)} ");
                 _money += CalculateRepairPrice(breakage);
@@ -215,7 +216,7 @@ namespace HomeWork_6_13
 
         private void Fill()
         {
-            DB_Details dB_Details = new DB_Details();
+            DataBaseDetails dB_Details = new DataBaseDetails();
             int minRangeRandom = 1;
             int maxRangeRandom = 16;
             Random random = new Random();
@@ -228,13 +229,12 @@ namespace HomeWork_6_13
         }
     }
 
-    class DB_Details
+    class DataBaseDetails
     {
-
         private Random _random = new Random();
         private List<Detail> _details;
 
-        public DB_Details()
+        public DataBaseDetails()
         {
             _details = new List<Detail>();
             _details.Add(new Detail("Тормозной диск", 2500));
@@ -257,11 +257,11 @@ namespace HomeWork_6_13
         }
     }
 
-    class DB_Breakages
+    class DataBaseBreakages
     {
         private List<Breakage> _breakages;
         
-        public DB_Breakages()
+        public DataBaseBreakages()
         {
             _breakages= new List<Breakage>();
             _breakages.Add(new Breakage("Замена тормозного диска", "Тормозной диск", 1000));
